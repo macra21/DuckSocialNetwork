@@ -1,0 +1,1 @@
+rootProject.name = "DuckSocialNetwork2.0"
