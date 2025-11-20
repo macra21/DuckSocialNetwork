@@ -8,6 +8,7 @@ import com.org.ddd.service.*;
 import com.org.ddd.service.event.EventService;
 import com.org.ddd.service.exceptions.ServiceException;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -126,6 +127,8 @@ public class ConsoleUI {
 
         } catch (ValidationException | RepositoryException e) {
             System.out.println("Login failed: " + e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Login failed: %s" + e.getMessage());
         }
     }
 

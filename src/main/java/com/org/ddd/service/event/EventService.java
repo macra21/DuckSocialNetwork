@@ -25,11 +25,9 @@ public class EventService {
         this.userRepo = userRepo;
 
         this.executionStrategies = new HashMap<>();
-
-        // add other strategies if needed
         this.executionStrategies.put(
                 RaceEvent.class,
-                new RaceExecutionStrategy(userRepo, eventRepo, this)
+                new RaceExecutionStrategy(userRepo, eventRepo)
         );
     }
 
@@ -58,7 +56,7 @@ public class EventService {
     public Iterable<Event> findAll(){
         return eventRepo.findAll();
     }
-    
+
     public void executeEvent(Long eventId) {
         Event event = eventRepo.findById(eventId);
 
@@ -68,7 +66,11 @@ public class EventService {
             throw new ServiceException("No execution strategy found for event type: " + event.getClass().getSimpleName());
         }
 
-        strategy.execute(event);
+        notifySubscribers(eventId, "Race '" + event.getName() + "' is starting!");
+
+        String executionReport = strategy.execute(event);
+
+        notifySubscribers(eventId, executionReport);
     }
 
     public void subscribe(Long userId, Long eventId) {

@@ -6,5 +6,5 @@ import com.org.ddd.repository.exceptions.RepositoryException;
 
 public interface EventExecutionStrategy {
 
-    void execute(Event event) throws ValidationException, RepositoryException;
+    String execute(Event event) throws ValidationException, RepositoryException;
 }
