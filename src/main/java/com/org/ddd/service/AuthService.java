@@ -5,24 +5,21 @@ import com.org.ddd.domain.validation.exceptions.ValidationException;
 import com.org.ddd.domain.validation.validators.Validator;
 import com.org.ddd.repository.AbstractRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
+import com.org.ddd.utils.PasswordHasher;
+
+import java.security.NoSuchAlgorithmException;
 
 public class AuthService {
 
     private final AbstractRepository<Long, User> userRepository;
     private final Validator<User> userValidator;
 
-    public AuthService(
-            AbstractRepository<Long, User> userRepository,
-            Validator<User> userValidator
-    ) {
+    public AuthService(AbstractRepository<Long, User> userRepository, Validator<User> userValidator) {
         this.userRepository = userRepository;
         this.userValidator = userValidator;
     }
 
-    public User login(
-            String email,
-            String password
-    ) throws ValidationException, RepositoryException {
+    public User login(String email, String password) throws ValidationException, RepositoryException, NoSuchAlgorithmException {
 
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
             throw new ValidationException("Email and password are required.\n");
@@ -34,17 +31,24 @@ public class AuthService {
             throw new ValidationException("Invalid credentials. User not found.\n");
         }
 
-        if (!userToLogin.getPassword().equals(password)) {
+        String hashedPassword = PasswordHasher.hash(password);
+
+        if (!userToLogin.getPassword().equals(hashedPassword)) {
             throw new ValidationException("Invalid credentials. Wrong password.\n");
         }
 
         return userToLogin;
     }
 
-    public void register(User user) throws ValidationException, RepositoryException {
+    public void register(User user) throws ValidationException, RepositoryException, NoSuchAlgorithmException {
         userValidator.validate(user);
+
         validateUsernameUniqueness(user.getUsername());
         validateEmailUniqueness(user.getEmail());
+
+        String hashedPassword = PasswordHasher.hash(user.getPassword());
+        user.setPassword(hashedPassword);
+
         userRepository.add(user);
     }
 

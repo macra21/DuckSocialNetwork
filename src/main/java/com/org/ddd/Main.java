@@ -4,8 +4,7 @@ import com.org.ddd.domain.entities.*;
 import com.org.ddd.domain.validation.validators.*;
 import com.org.ddd.repository.AbstractRepository;
 import com.org.ddd.repository.FileRepository;
-import com.org.ddd.repository.dbRepositories.FriendshipDBRepository;
-import com.org.ddd.repository.dbRepositories.UserDBRepository;
+import com.org.ddd.repository.dbRepositories.*;
 import com.org.ddd.repository.converters.*;
 import com.org.ddd.repository.exceptions.RepositoryException;
 import com.org.ddd.service.*;
@@ -53,7 +52,7 @@ public class Main {
             //EntityConverter<Friendship> friendshipConverter = new FriendshipConverter(); //used for the filerepo
             EntityConverter<Flock> flockConverter = new FlockConverter();
             EntityConverter<Event> eventConverter = new EventConverter();
-            EntityConverter<Message> messageConverter = new MessageConverter();
+            //EntityConverter<Message> messageConverter = new MessageConverter(); //used for the filerepo
 
             AbstractRepository<Long, User> userRepo = new UserDBRepository(
                     dbUrl, dbUser, dbPass
@@ -63,17 +62,14 @@ public class Main {
                     dbUrl, dbUser, dbPass
             );
 
-            AbstractRepository<Long, Flock> flockRepo = new FileRepository<>(
-                    Paths.get(dataFolderPath + "flocks.txt"),
-                    flockConverter
+            AbstractRepository<Long, Flock> flockRepo = new FlockDBRepository(
+                    dbUrl, dbUser, dbPass
             );
-            AbstractRepository<Long, Event> eventRepo = new FileRepository<>(
-                    Paths.get(dataFolderPath + "events.txt"),
-                    eventConverter
+            AbstractRepository<Long, Event> raceEventRepo = new RaceEventDBRepository(
+                    dbUrl, dbUser, dbPass
             );
-            AbstractRepository<Long, Message> messageRepo = new FileRepository<>(
-                    Paths.get(dataFolderPath + "messages.txt"),
-                    messageConverter
+            AbstractRepository<Long, Message> messageRepo = new MessageDBRepository(
+                    dbUrl, dbUser, dbPass
             );
 
             MessageService messageService = new MessageService(
@@ -100,7 +96,7 @@ public class Main {
             );
 
             EventService eventService = new EventService(
-                    eventRepo,
+                    raceEventRepo,
                     userRepo
             );
 

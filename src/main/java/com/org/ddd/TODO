@@ -1,2 +1,7 @@
-Implement hashing password in when saving user in csv files
-Use EventValidator in EventService
+DONE:
+ - Implement hashing password in when saving user in csv files/db
+
+TODO:
+ - Use EventValidator in EventService
+ - Implement update function in MessageDBRepository to edit messages
+ - Only allow the organizer of the event to execute it
