@@ -1,10 +1,12 @@
 package com.org.ddd.domain.entities;
 
+import com.org.ddd.utils.Identifiable;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Group<T extends User> extends Entity<Long> {
+public abstract class Group<T extends User> extends Identifiable<Long> {
     private String name;
     private final List<Long> memberIds;
     private LocalDateTime createdAt;

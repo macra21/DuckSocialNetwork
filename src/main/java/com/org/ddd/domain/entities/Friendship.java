@@ -1,8 +1,10 @@
 package com.org.ddd.domain.entities;
 
+import com.org.ddd.utils.Identifiable;
+
 import java.time.LocalDateTime;
 
-public class Friendship extends Entity<Long>{
+public class Friendship extends Identifiable<Long> {
     private Long userId1;
     private Long userId2;
     private LocalDateTime friendsFrom;

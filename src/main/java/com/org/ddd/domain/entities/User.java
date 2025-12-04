@@ -1,6 +1,8 @@
 package com.org.ddd.domain.entities;
 
-public abstract class User extends Entity<Long>{
+import com.org.ddd.utils.Identifiable;
+
+public abstract class User extends Identifiable<Long> {
     private String username;
     private String email;
     private String password;

@@ -1,6 +1,6 @@
-package com.org.ddd.domain.entities;
+package com.org.ddd.utils;
 
-public class Entity<ID> {
+public class Identifiable<ID> {
     private ID id;
 
     public ID getId() {

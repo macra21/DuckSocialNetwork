@@ -1,13 +1,13 @@
 package com.org.ddd.repository;
 
-import com.org.ddd.domain.entities.Entity;
+import com.org.ddd.utils.Identifiable;
 import com.org.ddd.repository.exceptions.RepositoryException;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class InMemoryRepository<E extends Entity<Long>> implements AbstractRepository<Long, E> {
+public class InMemoryRepository<E extends Identifiable<Long>> implements AbstractRepository<Long, E> {
     protected final Map<Long, E> entities;
     protected final AtomicLong idCounter;
 

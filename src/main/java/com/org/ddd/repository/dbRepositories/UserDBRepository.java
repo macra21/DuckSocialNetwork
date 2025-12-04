@@ -2,15 +2,22 @@ package com.org.ddd.repository.dbRepositories;
 
 
 import com.org.ddd.domain.entities.*;
+import com.org.ddd.dto.UserFilterDTO;
 import com.org.ddd.repository.AbstractRepository;
+import com.org.ddd.repository.PagingRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
+import com.org.ddd.utils.paging.Page;
+import com.org.ddd.utils.paging.Pageable;
+import javafx.util.Pair;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-public class UserDBRepository implements AbstractRepository<Long, User> {
+public class UserDBRepository implements PagingRepository<Long, User> {
 
     private final String url;
     private final String username;
@@ -207,6 +214,140 @@ public class UserDBRepository implements AbstractRepository<Long, User> {
         }
 
         return users;
+    }
+
+    private Pair<String, List<Object>> filterToSql(UserFilterDTO filter){
+        if (filter == null){
+            return new Pair<>("", Collections.emptyList());
+        } else {
+            List<String> conditions = new ArrayList<>();
+            List<Object> params = new ArrayList<>();
+            // For User
+            filter.getUsername().ifPresent((usernameFilter) -> {
+                conditions.add("username like ?");
+                params.add(usernameFilter);
+            });
+            // For Person
+            filter.getFirstName().ifPresent((firstNameFilter) -> {
+                conditions.add("first_name like ?");
+                params.add(firstNameFilter);
+            });
+            filter.getLastName().ifPresent((lastNameFilter) -> {
+                conditions.add("last_name like ?");
+                params.add(lastNameFilter);
+            });
+            filter.getBirthDate().ifPresent((birthDateFilter) -> {
+                conditions.add("birth_date = ?");
+                params.add(birthDateFilter);
+            });
+            filter.getOccupation().ifPresent((occupationFilter) -> {
+                conditions.add("occupation like ?");
+                params.add(occupationFilter);
+            });
+            filter.getEmpathyLevel().ifPresent((empathyLevelFilter) -> {
+                conditions.add("empathy_level = ?");
+                params.add(empathyLevelFilter);
+            });
+            // For Duck
+            filter.getSpeed().ifPresent((speedFilter) -> {
+                conditions.add("speed = ?");
+                params.add(speedFilter);
+            });
+            filter.getResistance().ifPresent((resistanceFilter) -> {
+                conditions.add("resistance = ?");
+                params.add(resistanceFilter);
+            });
+            filter.getFlockId().ifPresent((flockIdFilter) -> {
+                conditions.add("flock_id = ?");
+                params.add(flockIdFilter);
+            });
+            filter.getDuckType().ifPresent((duckTypeFilter) -> {
+                conditions.add("type = ?");
+                params.add(duckTypeFilter);
+            });
+            String sql = String.join(" and ", conditions);
+            return new Pair<>(sql, params);
+        }
+    }
+
+    private int count(Connection connection, UserFilterDTO filter){
+        String sql = "SELECT COUNT(*) AS count FROM users";
+        Pair<String, List<Object>> sqlFilter = this.filterToSql(filter);
+        if (!((String)sqlFilter.getKey()).isEmpty()){
+            sql = sql = " where " + (String)sqlFilter.getKey();
+        }
+
+        int cnt;
+        try (PreparedStatement ps = connection.prepareStatement(sql)){
+            int paramIndex = 0;
+            for (Object param: (List)sqlFilter.getValue()){
+                ps.setObject(++paramIndex, param);
+            }
+
+            try (ResultSet rs = ps.executeQuery()){
+                int totalNumberOfUsers = 0;
+                if (rs.next()){
+                    totalNumberOfUsers = rs.getInt("count");
+                }
+                cnt = totalNumberOfUsers;
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return cnt;
+    }
+
+    private List<User> findAllOnPage(Connection connection, Pageable pageable, UserFilterDTO filter){
+        List<User> usersOnPage = new ArrayList<>();
+        String sql = "SELECT * FROM users";
+        Pair<String, List<Object>> sqlFilter = this.filterToSql(filter);
+        if (!((String)sqlFilter.getKey()).isEmpty()){
+            sql = sql = " where " + (String)sqlFilter.getKey();
+        }
+        sql += " LIMIT ? OFFSET ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)){
+            int paramIndex = 0;
+
+            for (Object param : (List)sqlFilter.getValue()){
+                ps.setObject(++paramIndex, param);
+            }
+
+            ps.setInt(++paramIndex, pageable.getPageSize());
+            ps.setInt(++paramIndex, pageable.getPageNumber() * pageable.getPageSize());
+
+            try (ResultSet rs = ps.executeQuery()){
+                while (rs.next()){
+                    usersOnPage.add(parseUserFromResultSet(rs));
+                }
+            }
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+
+        return usersOnPage;
+    }
+
+    public Page<User> findAllOnPage(Pageable pageable, UserFilterDTO filter){
+        try (Connection connection = getConnection()){
+            int totalNumberOfUsers = this.count(connection, filter);
+            List<User> usersOnPage;
+            if (totalNumberOfUsers > 0){
+                usersOnPage = this.findAllOnPage(connection, pageable, filter);
+            } else {
+                usersOnPage = new ArrayList<>();
+            }
+            return new Page<>(usersOnPage, totalNumberOfUsers);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Page<User> findAllOnPage(Pageable pageable) {
+        return this.findAllOnPage(pageable, (UserFilterDTO)null);
     }
 
     private User parseUserFromResultSet(ResultSet rs) throws SQLException {

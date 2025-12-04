@@ -1,6 +1,6 @@
 package com.org.ddd.repository;
 
-import com.org.ddd.domain.entities.Entity;
+import com.org.ddd.utils.Identifiable;
 import com.org.ddd.repository.converters.EntityConverter;
 import com.org.ddd.repository.exceptions.RepositoryException;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class FileRepository<E extends Entity<Long>> extends InMemoryRepository<E>{
+public class FileRepository<E extends Identifiable<Long>> extends InMemoryRepository<E>{
     private final Path filePath;
     private final EntityConverter<E> converter;
 

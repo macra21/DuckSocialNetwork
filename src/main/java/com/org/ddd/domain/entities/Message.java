@@ -1,8 +1,10 @@
 package com.org.ddd.domain.entities;
 
+import com.org.ddd.utils.Identifiable;
+
 import java.time.LocalDateTime;
 
-public class Message extends Entity<Long> {
+public class Message extends Identifiable<Long> {
 
     private final Long senderId;
     private final Long receiverId;

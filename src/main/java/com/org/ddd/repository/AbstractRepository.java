@@ -1,9 +1,9 @@
 package com.org.ddd.repository;
 
-import com.org.ddd.domain.entities.Entity;
+import com.org.ddd.utils.Identifiable;
 import com.org.ddd.repository.exceptions.RepositoryException;
 
-public interface AbstractRepository<ID, E extends Entity<ID>> {
+public interface AbstractRepository<ID, E extends Identifiable<ID>> {
     void add(E entity) throws RepositoryException;
 
     void update(E entity) throws RepositoryException;
