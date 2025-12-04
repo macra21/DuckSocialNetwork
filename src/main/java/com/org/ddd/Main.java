@@ -3,24 +3,28 @@ package com.org.ddd;
 import com.org.ddd.domain.entities.*;
 import com.org.ddd.domain.validation.validators.*;
 import com.org.ddd.repository.AbstractRepository;
-import com.org.ddd.repository.FileRepository;
 import com.org.ddd.repository.dbRepositories.*;
 import com.org.ddd.repository.converters.*;
 import com.org.ddd.repository.exceptions.RepositoryException;
 import com.org.ddd.service.*;
-import com.org.ddd.service.event.EventService;
-import com.org.ddd.ui.ConsoleUI;
+import com.org.ddd.ui.DuckController;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
-
 import java.util.Properties;
 
-public class Main {
+public class Main extends Application {
 
     public static void main(String[] args) {
+        launch(args);
+    }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         Properties props = new Properties();
         try (InputStream input = Main.class.getClassLoader().getResourceAsStream("config.properties")) {
 
@@ -35,24 +39,13 @@ public class Main {
             e.printStackTrace();
             return;
         }
-        // sneaky
         String dbUrl = props.getProperty("db.url");
         String dbUser = props.getProperty("db.user");
         String dbPass = props.getProperty("db.pass");
 
-        String dataFolderPath = "src\\main\\java\\com\\org\\ddd\\data\\";
-
         try {
             Validator<User> userValidator = new UserValidator();
             Validator<Friendship> friendshipValidator = new FriendshipValidator();
-            Validator<Flock> flockValidator = new FlockValidator();
-            Validator<Message> messageValidator = new MessageValidator();
-            //Validator<Event> eventValidator = new EventValidator(); //not used yet:((
-
-            //EntityConverter<Friendship> friendshipConverter = new FriendshipConverter(); //used for the filerepo
-            EntityConverter<Flock> flockConverter = new FlockConverter();
-            EntityConverter<Event> eventConverter = new EventConverter();
-            //EntityConverter<Message> messageConverter = new MessageConverter(); //used for the filerepo
 
             AbstractRepository<Long, User> userRepo = new UserDBRepository(
                     dbUrl, dbUser, dbPass
@@ -62,42 +55,10 @@ public class Main {
                     dbUrl, dbUser, dbPass
             );
 
-            AbstractRepository<Long, Flock> flockRepo = new FlockDBRepository(
-                    dbUrl, dbUser, dbPass
-            );
-            AbstractRepository<Long, Event> raceEventRepo = new RaceEventDBRepository(
-                    dbUrl, dbUser, dbPass
-            );
-            AbstractRepository<Long, Message> messageRepo = new MessageDBRepository(
-                    dbUrl, dbUser, dbPass
-            );
-
-            MessageService messageService = new MessageService(
-                    messageRepo,
-                    userRepo,
-                    messageValidator
-            );
-
             FriendshipService friendshipService = new FriendshipService(
                     friendshipRepo,
                     userRepo,
                     friendshipValidator
-            );
-
-            FlockService flockService = new FlockService(
-                    flockRepo,
-                    userRepo,
-                    flockValidator
-            );
-
-            AuthService authService = new AuthService(
-                    userRepo,
-                    userValidator
-            );
-
-            EventService eventService = new EventService(
-                    raceEventRepo,
-                    userRepo
             );
 
             UserService userService = new UserService(
@@ -106,16 +67,15 @@ public class Main {
                     userValidator
             );
 
-            ConsoleUI console = new ConsoleUI(
-                    userService,
-                    friendshipService,
-                    authService,
-                    flockService,
-                    eventService,
-                    messageService
-            );
-
-            console.run();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DuckView.fxml"));
+            Scene scene = new Scene(loader.load(), 800, 600);
+            primaryStage.setScene(scene);
+            
+            DuckController controller = loader.getController();
+            controller.setUserService(userService);
+            
+            primaryStage.setTitle("Duck Social Network");
+            primaryStage.show();
 
         } catch (RepositoryException e) {
             System.err.println("[CRITICAL BOOT ERROR]");
