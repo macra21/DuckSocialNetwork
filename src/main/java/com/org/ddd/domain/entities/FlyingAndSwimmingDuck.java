@@ -1,7 +1,7 @@
 package com.org.ddd.domain.entities;
 
-public class FlyingAndSwimingDuck extends Duck implements Flyer, Swimmer{
-    public FlyingAndSwimingDuck(String username, String email, String password, double speed, DuckType duckType, double resistance) {
+public class FlyingAndSwimmingDuck extends Duck implements Flyer, Swimmer{
+    public FlyingAndSwimmingDuck(String username, String email, String password, double speed, DuckType duckType, double resistance) {
         super(username, email, password, speed, duckType, resistance);
     }
 

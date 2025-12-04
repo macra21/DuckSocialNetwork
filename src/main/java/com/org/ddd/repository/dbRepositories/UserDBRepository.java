@@ -3,7 +3,6 @@ package com.org.ddd.repository.dbRepositories;
 
 import com.org.ddd.domain.entities.*;
 import com.org.ddd.dto.UserFilterDTO;
-import com.org.ddd.repository.AbstractRepository;
 import com.org.ddd.repository.PagingRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
 import com.org.ddd.utils.paging.Page;
@@ -13,7 +12,6 @@ import javafx.util.Pair;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -222,11 +220,23 @@ public class UserDBRepository implements PagingRepository<Long, User> {
         } else {
             List<String> conditions = new ArrayList<>();
             List<Object> params = new ArrayList<>();
+            
+            // For entity type
+            filter.getUserClass().ifPresent(userClassFilter -> {
+                conditions.add("user_type = ?");
+                if (userClassFilter.equals(Person.class)) {
+                    params.add("PERSON");
+                } else if (userClassFilter.equals(Duck.class)) {
+                    params.add("DUCK");
+                }
+            });
+
             // For User
             filter.getUsername().ifPresent((usernameFilter) -> {
                 conditions.add("username like ?");
                 params.add(usernameFilter);
             });
+
             // For Person
             filter.getFirstName().ifPresent((firstNameFilter) -> {
                 conditions.add("first_name like ?");
@@ -248,6 +258,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
                 conditions.add("empathy_level = ?");
                 params.add(empathyLevelFilter);
             });
+
             // For Duck
             filter.getSpeed().ifPresent((speedFilter) -> {
                 conditions.add("speed = ?");
@@ -262,10 +273,10 @@ public class UserDBRepository implements PagingRepository<Long, User> {
                 params.add(flockIdFilter);
             });
             filter.getDuckType().ifPresent((duckTypeFilter) -> {
-                conditions.add("type = ?");
-                params.add(duckTypeFilter);
+                conditions.add("type = ?::duck_type");
+                params.add(duckTypeFilter.name());
             });
-            String sql = String.join(" and ", conditions);
+            String sql = String.join(" AND ", conditions);
             return new Pair<>(sql, params);
         }
     }
@@ -273,14 +284,14 @@ public class UserDBRepository implements PagingRepository<Long, User> {
     private int count(Connection connection, UserFilterDTO filter){
         String sql = "SELECT COUNT(*) AS count FROM users";
         Pair<String, List<Object>> sqlFilter = this.filterToSql(filter);
-        if (!((String)sqlFilter.getKey()).isEmpty()){
-            sql = sql = " where " + (String)sqlFilter.getKey();
+        if (!sqlFilter.getKey().isEmpty()){
+            sql = sql + " WHERE " + sqlFilter.getKey();
         }
 
         int cnt;
         try (PreparedStatement ps = connection.prepareStatement(sql)){
             int paramIndex = 0;
-            for (Object param: (List)sqlFilter.getValue()){
+            for (Object param: sqlFilter.getValue()){
                 ps.setObject(++paramIndex, param);
             }
 
@@ -303,15 +314,15 @@ public class UserDBRepository implements PagingRepository<Long, User> {
         List<User> usersOnPage = new ArrayList<>();
         String sql = "SELECT * FROM users";
         Pair<String, List<Object>> sqlFilter = this.filterToSql(filter);
-        if (!((String)sqlFilter.getKey()).isEmpty()){
-            sql = sql = " where " + (String)sqlFilter.getKey();
+        if (!sqlFilter.getKey().isEmpty()){
+            sql = sql + " WHERE " + sqlFilter.getKey();
         }
         sql += " LIMIT ? OFFSET ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)){
             int paramIndex = 0;
 
-            for (Object param : (List)sqlFilter.getValue()){
+            for (Object param : sqlFilter.getValue()){
                 ps.setObject(++paramIndex, param);
             }
 

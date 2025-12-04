@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <VBox fx:id="usersCenterPane" minHeight="400" spacing="10">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <children>
+                        <Label text="Filter by:" />
+                        <ComboBox fx:id="userTypeComboBox" onAction="#handleUserTypeChange" promptText="Select User Type" />
+                        <ComboBox fx:id="duckTypeComboBox" managed="false" onAction="#handleDuckTypeChange" promptText="Select Duck Type" visible="false" />
+                    </children>
+                </HBox>
+                <TableView fx:id="userTableView" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="column1" prefWidth="75.0" text="Id" />
+                        <TableColumn fx:id="column2" prefWidth="150.0" text="Username" />
+                        <TableColumn fx:id="column3" prefWidth="150.0" text="Email" />
+                        <TableColumn fx:id="column4" prefWidth="150.0" text="Property 4" />
+                        <TableColumn fx:id="column5" prefWidth="150.0" text="Property 5" />
+                        <TableColumn fx:id="column6" prefWidth="150.0" text="Property 6" />
+                    </columns>
+                </TableView>
+                <Pagination fx:id="pagination" />
+            </children>
+        </VBox>
+    </center>
+    <right>
+        <VBox fx:id="usersRightPane" prefWidth="250.0" spacing="10">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER" spacing="10">
+                    <children>
+                        <Button onAction="#handleAdd" prefWidth="100" text="Add" />
+                        <Button onAction="#handleDelete" prefWidth="100" text="Delete" />
+                    </children>
+                </HBox>
+                <Separator />
+                <VBox fx:id="addUserFormVBox" managed="false" spacing="5" visible="false">
+                    <children>
+                        <Label text="User Type" />
+                        <ComboBox fx:id="addUserTypeComboBox" prefWidth="230.0" promptText="Select Type" />
+                        <Label text="Username" />
+                        <TextField fx:id="addUsernameField" />
+                        <Label text="Email" />
+                        <TextField fx:id="addEmailField" />
+                        <Label text="Password" />
+                        <TextField fx:id="addPasswordField" />
+                        <VBox fx:id="personFieldsVBox" spacing="5">
+                            <children>
+                                <Label text="First Name" />
+                                <TextField fx:id="addFirstNameField" />
+                                <Label text="Last Name" />
+                                <TextField fx:id="addLastNameField" />
+                                <Label text="Birth Date (YYYY-MM-DD)" />
+                                <TextField fx:id="addBirthDateField" />
+                                <Label text="Occupation" />
+                                <TextField fx:id="addOccupationField" />
+                                <Label text="Empathy Level" />
+                                <TextField fx:id="addEmpathyLevelField" />
+                            </children>
+                        </VBox>
+                        <VBox fx:id="duckFieldsVBox" managed="false" spacing="5" visible="false">
+                            <children>
+                                <Label text="Duck Type" />
+                                <ComboBox fx:id="addDuckTypeComboBox" prefWidth="230.0" />
+                                <Label text="Speed" />
+                                <TextField fx:id="addSpeedField" />
+                                <Label text="Resistance" />
+                                <TextField fx:id="addResistanceField" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+                <VBox fx:id="deleteUserFormVBox" managed="false" spacing="5" visible="false">
+                    <children>
+                        <Label text="User ID to Delete" />
+                        <TextField fx:id="deleteUserIdField" />
+                    </children>
+                </VBox>
+                <Button fx:id="commitButton" managed="false" onAction="#handleCommitAction" prefWidth="230.0" text="Commit" visible="false" />
+                <Label fx:id="errorLabel" style="-fx-text-fill: red;" wrapText="true" />
+            </children>
+        </VBox>
+    </right>
+</BorderPane>

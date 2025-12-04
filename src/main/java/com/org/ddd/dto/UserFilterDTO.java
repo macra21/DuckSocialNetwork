@@ -1,11 +1,15 @@
 package com.org.ddd.dto;
 
 import com.org.ddd.domain.entities.DuckType;
+import com.org.ddd.domain.entities.User;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 public class UserFilterDTO {
+    // For filtering by entity type
+    private Optional<Class<? extends User>> userClass = Optional.empty();
+
     // For User
     private Optional<String> username = Optional.empty();
 
@@ -21,6 +25,14 @@ public class UserFilterDTO {
     private Optional<Double> resistance = Optional.empty();
     private Optional<Long> flockId = Optional.empty();
     private Optional<DuckType> duckType = Optional.empty();
+
+    public Optional<Class<? extends User>> getUserClass() {
+        return userClass;
+    }
+
+    public void setUserClass(Optional<Class<? extends User>> userClass) {
+        this.userClass = userClass;
+    }
 
     public Optional<String> getUsername() {
         return username;

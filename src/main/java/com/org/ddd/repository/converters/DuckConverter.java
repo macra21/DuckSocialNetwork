@@ -38,7 +38,7 @@ public class DuckConverter implements EntityConverter<Duck> {
                 duck = new SwimmingDuck(parts[1], parts[2], parts[3],
                         Double.parseDouble(parts[5]), duckType, Double.parseDouble(parts[6]));
             } else if (duckType == DuckType.FLYING_AND_SWIMMING) {
-                duck = new FlyingAndSwimingDuck(parts[1], parts[2], parts[3],
+                duck = new FlyingAndSwimmingDuck(parts[1], parts[2], parts[3],
                         Double.parseDouble(parts[5]), duckType, Double.parseDouble(parts[6]));
             } else {
                 throw new RepositoryException("Unknown duck type found: " + duckType);

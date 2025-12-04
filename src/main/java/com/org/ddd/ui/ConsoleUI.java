@@ -374,7 +374,7 @@ public class ConsoleUI {
             case SWIMMING:
                 return new SwimmingDuck(user, email, pass, speed, type, resistance);
             case FLYING_AND_SWIMMING:
-                return new FlyingAndSwimingDuck(user, email, pass, speed, type, resistance);
+                return new FlyingAndSwimmingDuck(user, email, pass, speed, type, resistance);
             default:
                 throw new IllegalArgumentException("Unknown duck type: " + type);
         }

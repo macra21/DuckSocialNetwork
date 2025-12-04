@@ -30,6 +30,15 @@ public class FriendshipService {
         friendshipRepository.add(newFriendship);
     }
 
+    public void deleteFriendship(Long friendshipId) throws RepositoryException{
+        Friendship friendshipToDelete = friendshipRepository.findById(friendshipId);
+
+        if (friendshipToDelete == null)
+            throw new RepositoryException("Friendship with id " + friendshipId + " does not exist!\n");
+
+        friendshipRepository.delete(friendshipId);
+    }
+
     public void deleteFriendship(Long userId1, Long userId2) throws RepositoryException{
         Friendship friendshipToDelete = findExistingFriendship(userId1, userId2);
 

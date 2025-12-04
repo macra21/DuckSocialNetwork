@@ -3,12 +3,10 @@ package com.org.ddd;
 import com.org.ddd.domain.entities.*;
 import com.org.ddd.domain.validation.validators.*;
 import com.org.ddd.repository.AbstractRepository;
-import com.org.ddd.repository.PagingRepository;
 import com.org.ddd.repository.dbRepositories.*;
-import com.org.ddd.repository.converters.*;
 import com.org.ddd.repository.exceptions.RepositoryException;
 import com.org.ddd.service.*;
-import com.org.ddd.ui.DuckController;
+import com.org.ddd.ui.DeveloperController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -66,14 +64,14 @@ public class Main extends Application {
                     userValidator
             );
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DuckView.fxml"));
-            Scene scene = new Scene(loader.load(), 800, 600);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DeveloperView.fxml"));
+            Scene scene = new Scene(loader.load(), 1200, 620);
             primaryStage.setScene(scene);
             
-            DuckController controller = loader.getController();
-            controller.setUserService(userService);
+            DeveloperController controller = loader.getController();
+            controller.initialize(userService, friendshipService);
             
-            primaryStage.setTitle("Duck Social Network");
+            primaryStage.setTitle("Developer View");
             primaryStage.show();
 
         } catch (RepositoryException e) {

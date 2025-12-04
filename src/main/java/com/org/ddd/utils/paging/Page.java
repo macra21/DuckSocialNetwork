@@ -13,7 +13,7 @@ public class Page<E> {
         return elementsOnPage;
     }
 
-    public int getTotalNumerOfElements() {
+    public int getTotalNumberOfElements() {
         return totalNumerOfElements;
     }
 }
