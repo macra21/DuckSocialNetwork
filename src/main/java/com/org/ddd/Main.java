@@ -3,6 +3,7 @@ package com.org.ddd;
 import com.org.ddd.domain.entities.*;
 import com.org.ddd.domain.validation.validators.*;
 import com.org.ddd.repository.AbstractRepository;
+import com.org.ddd.repository.PagingRepository;
 import com.org.ddd.repository.dbRepositories.*;
 import com.org.ddd.repository.converters.*;
 import com.org.ddd.repository.exceptions.RepositoryException;
@@ -47,9 +48,7 @@ public class Main extends Application {
             Validator<User> userValidator = new UserValidator();
             Validator<Friendship> friendshipValidator = new FriendshipValidator();
 
-            AbstractRepository<Long, User> userRepo = new UserDBRepository(
-                    dbUrl, dbUser, dbPass
-            );
+            UserDBRepository userRepo = new UserDBRepository(dbUrl, dbUser, dbPass);
 
             AbstractRepository<Long, Friendship> friendshipRepo = new FriendshipDBRepository(
                     dbUrl, dbUser, dbPass

@@ -2,7 +2,7 @@ package com.org.ddd.repository;
 
 import com.org.ddd.utils.Identifiable;
 import com.org.ddd.repository.exceptions.RepositoryException;
-
+import com.org.ddd.utils.paging.*;
 public interface AbstractRepository<ID, E extends Identifiable<ID>> {
     void add(E entity) throws RepositoryException;
 
