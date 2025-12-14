@@ -5,8 +5,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- Carcasa principală a aplicației -->
-<BorderPane fx:id="mainBorderPane" prefHeight="600" prefWidth="1000" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.org.ddd.ui.DeveloperController">
+<BorderPane fx:id="mainBorderPane" prefHeight="600" prefWidth="1000" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.org.ddd.ui.admin.DeveloperController">
     <left>
         <VBox spacing="5">
             <padding>

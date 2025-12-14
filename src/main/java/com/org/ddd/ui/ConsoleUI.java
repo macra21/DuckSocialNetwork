@@ -1,3 +1,5 @@
+// this console interface is no longer compatible with the app
+/*
 
 package com.org.ddd.ui;
 
@@ -821,4 +823,4 @@ public class ConsoleUI {
             }
         }
     }
-}
+}*/

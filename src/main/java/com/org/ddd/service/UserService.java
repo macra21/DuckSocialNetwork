@@ -36,6 +36,7 @@ public class UserService {
     public User deleteUser(Long id) throws RepositoryException{
         friendshipService.deleteAllFriendshipsForUser(id);
         //TODO delete user from all groups it is in...
+        //TODO delete all user messages
         return userRepository.delete(id);
     }
 

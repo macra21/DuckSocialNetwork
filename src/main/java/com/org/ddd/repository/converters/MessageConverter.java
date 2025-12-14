@@ -1,3 +1,5 @@
+// This class was used for the FileRepository and now it is not compatible with the current project
+/*
 package com.org.ddd.repository.converters;
 
 import com.org.ddd.domain.entities.Message;
@@ -52,4 +54,4 @@ public class MessageConverter implements EntityConverter<Message> {
             throw new RepositoryException("Failed to parse message line: " + line, e);
         }
     }
-}
+}*/

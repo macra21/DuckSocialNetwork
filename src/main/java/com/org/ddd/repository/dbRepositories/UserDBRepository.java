@@ -236,6 +236,10 @@ public class UserDBRepository implements PagingRepository<Long, User> {
                 conditions.add("username like ?");
                 params.add(usernameFilter);
             });
+            filter.getEmail().ifPresent((emailFilter) -> {
+                conditions.add("email like ?");
+                params.add(emailFilter);
+            });
 
             // For Person
             filter.getFirstName().ifPresent((firstNameFilter) -> {

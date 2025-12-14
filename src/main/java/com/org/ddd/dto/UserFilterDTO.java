@@ -12,6 +12,7 @@ public class UserFilterDTO {
 
     // For User
     private Optional<String> username = Optional.empty();
+    private Optional<String> email = Optional.empty(); // Added email field
 
     // For Person
     private Optional<String> firstName = Optional.empty();
@@ -40,6 +41,14 @@ public class UserFilterDTO {
 
     public void setUsername(Optional<String> username) {
         this.username = username;
+    }
+
+    public Optional<String> getEmail() {
+        return email;
+    }
+
+    public void setEmail(Optional<String> email) {
+        this.email = email;
     }
 
     public Optional<String> getFirstName() {

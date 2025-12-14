@@ -1,4 +1,4 @@
-package com.org.ddd.ui;
+package com.org.ddd.ui.admin;
 
 import com.org.ddd.domain.entities.*;
 import com.org.ddd.dto.UserFilterDTO;
@@ -106,7 +106,7 @@ public class DeveloperController {
         addUserTypeComboBox.setItems(FXCollections.observableArrayList("Person", "Duck"));
         addDuckTypeComboBox.setItems(FXCollections.observableArrayList(DuckType.values()));
         addUserTypeComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            boolean isPerson = "Person".equals(newVal);
+            boolean isPerson = newVal.equals("Person");
             personFieldsVBox.setVisible(isPerson);
             personFieldsVBox.setManaged(isPerson);
             duckFieldsVBox.setVisible(!isPerson);
@@ -130,7 +130,7 @@ public class DeveloperController {
     public void handleShowUsers() {
         try {
             currentView = "USERS";
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UsersView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/UsersView.fxml"));
             loader.setController(this);
             BorderPane usersView = loader.load();
 
@@ -148,7 +148,7 @@ public class DeveloperController {
     public void handleShowFriendships() {
         try {
             currentView = "FRIENDSHIPS";
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FriendshipsView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/admin/FriendshipsView.fxml"));
             loader.setController(this);
             BorderPane friendshipsView = loader.load();
 
@@ -181,7 +181,9 @@ public class DeveloperController {
 
         int totalElements = page.getTotalNumberOfElements();
         int pageCount = (int) Math.ceil((double) totalElements / PAGE_SIZE);
-        if (pageCount == 0 && totalElements > 0) { pageCount = 1; }
+        if (pageCount == 0 && totalElements > 0) {
+            pageCount = 1;
+        }
         if (pagination.getPageCount() != pageCount) { pagination.setPageCount(pageCount); }
 
         updateTableColumns(userType);
@@ -267,6 +269,8 @@ public class DeveloperController {
     @FXML
     private void handleCommitAction() {
         errorLabel.setText("");
+        //System.out.println(currentAction);
+        //System.out.println(currentView);
         try {
             if (currentAction.equals("ADD")) {
                 if (currentView.equals("USERS")) {
@@ -276,8 +280,9 @@ public class DeveloperController {
                     executeAddFriendship();
                     errorLabel.setText("Friendship added successfully!");
                 }
-            } else if (currentView.equals("ADD")) {
+            } else if (currentAction.equals("DELETE")) {
                 if (currentView.equals("USERS")) {
+                    //System.out.println("Sterg");
                     executeDeleteUser();
                     errorLabel.setText("User deleted successfully!");
                 } else if (currentView.equals("FRIENDSHIPS")) {
@@ -318,7 +323,9 @@ public class DeveloperController {
 
     private void executeDeleteUser() throws RepositoryException {
         Long id = Long.parseLong(deleteUserIdField.getText());
+        System.out.println(deleteUserIdField.getText());
         userService.deleteUser(id);
+        //System.out.printf("sters");
         loadUsersPage(pagination.getCurrentPageIndex());
     }
 

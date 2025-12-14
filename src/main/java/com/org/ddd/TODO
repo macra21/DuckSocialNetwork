@@ -1,7 +1,11 @@
 DONE:
  - Implement hashing password in when saving user in csv files/db
+ - Implement update function in MessageDBRepository to edit messages
+ - Paginate Repositories: * MessageDBRepository
 
 TODO:
  - Use EventValidator in EventService
- - Implement update function in MessageDBRepository to edit messages
  - Only allow the organizer of the event to execute it
+ - Paginate Repositories: * FlockDBRepository
+                          * FrienshipDBRepository
+                          * RaceDBRepository
