@@ -4,6 +4,7 @@ import com.org.ddd.domain.entities.Message;
 import com.org.ddd.dto.MessageFilterDTO;
 import com.org.ddd.repository.PagingRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
+import com.org.ddd.utils.DatabaseConnectionManager;
 import com.org.ddd.utils.paging.Page;
 import com.org.ddd.utils.paging.Pageable;
 import javafx.util.Pair;
@@ -18,19 +19,7 @@ import java.util.Map;
 
 public class MessageDBRepository implements PagingRepository<Long, Message> {
 
-    private final String url;
-    private final String username;
-    private final String password;
-
-    public MessageDBRepository(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
-    }
+    public MessageDBRepository() {}
 
     @Override
     public void add(Message entity) throws RepositoryException {
@@ -39,7 +28,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
         String msgSql = "INSERT INTO messages (from_user_id, message, date, reply_id) VALUES (?, ?, ?, ?)";
         String rcptSql = "INSERT INTO message_recipients (message_id, recipient_user_id) VALUES (?, ?)";
 
-        try (Connection connection = getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getConnection()) {
             connection.setAutoCommit(false);
 
             try {
@@ -84,7 +73,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
 
         String sql = "UPDATE messages SET message = ? WHERE id = ?";
         
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             
             ps.setString(1, entity.getContent());
@@ -106,7 +95,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
         if (msg == null) throw new RepositoryException("Message not found!");
 
         String sql = "DELETE FROM messages WHERE id = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.executeUpdate();
@@ -119,7 +108,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
     @Override
     public Message findById(Long id) throws RepositoryException {
         String sql = "SELECT * FROM messages WHERE id = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -137,7 +126,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
     public Iterable<Message> findAll() throws RepositoryException {
         List<Message> messages = new ArrayList<>();
         String sql = "SELECT * FROM messages ORDER BY date DESC";
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -254,7 +243,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
     }
 
     public Page<Message> findAllOnPage(Pageable pageable, MessageFilterDTO filter) {
-        try (Connection connection = getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getConnection()) {
             int total = count(connection, filter);
             List<Message> data = (total > 0) ? findAllOnPage(connection, pageable, filter) : new ArrayList<>();
             return new Page<>(data, total);
@@ -265,7 +254,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
 
     public void markAsRead(Long messageId, Long userId) {
         String sql = "UPDATE message_recipients SET seen_date = ? WHERE message_id = ? AND recipient_user_id = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             ps.setLong(2, messageId);
@@ -283,7 +272,7 @@ public class MessageDBRepository implements PagingRepository<Long, Message> {
                      "WHERE mr.recipient_user_id = ? AND mr.seen_date IS NULL " +
                      "GROUP BY m.from_user_id";
         
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, forUser);
             try (ResultSet rs = ps.executeQuery()) {

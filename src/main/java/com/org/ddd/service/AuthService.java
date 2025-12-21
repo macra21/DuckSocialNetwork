@@ -42,7 +42,7 @@ public class AuthService {
         return userToLogin;
     }
 
-    public void register(User user) throws ValidationException, RepositoryException, NoSuchAlgorithmException {
+    public User register(User user) throws ValidationException, RepositoryException, NoSuchAlgorithmException {
         userValidator.validate(user);
 
         validateUsernameUniqueness(user.getUsername());
@@ -52,6 +52,8 @@ public class AuthService {
         user.setPassword(hashedPassword);
 
         userRepository.add(user);
+
+        return findUserByEmail(user.getEmail());
     }
 
     private User findUserByEmail(String email) {

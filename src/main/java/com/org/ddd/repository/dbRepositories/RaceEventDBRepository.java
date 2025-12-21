@@ -5,6 +5,7 @@ import com.org.ddd.domain.entities.Lane;
 import com.org.ddd.domain.entities.RaceEvent;
 import com.org.ddd.repository.AbstractRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
+import com.org.ddd.utils.DatabaseConnectionManager;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -13,18 +14,7 @@ import java.util.List;
 
 public class RaceEventDBRepository implements AbstractRepository<Long, Event> {
 
-    private final String url;
-    private final String username;
-    private final String password;
-
-    public RaceEventDBRepository(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
+    public RaceEventDBRepository() {
     }
 
     @Override
@@ -38,7 +28,7 @@ public class RaceEventDBRepository implements AbstractRepository<Long, Event> {
         String sqlSubscribers = "INSERT INTO event_subscribers (event_id, user_id) VALUES (?, ?)";
         String sqlLanes = "INSERT INTO race_lanes (event_id, lane_number, distance, assigned_duck_id, time_result) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection connection = getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getConnection()) {
             Long generatedId = null;
             try (PreparedStatement ps = connection.prepareStatement(sqlEvent, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, raceEvent.getName());
@@ -111,7 +101,7 @@ public class RaceEventDBRepository implements AbstractRepository<Long, Event> {
         String sqlDelLanes = "DELETE FROM race_lanes WHERE event_id=?";
         String sqlInsLanes = "INSERT INTO race_lanes (event_id, lane_number, distance, assigned_duck_id, time_result) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection connection = getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(sqlUpdate)) {
                 ps.setString(1, raceEvent.getName());
                 ps.setString(2, raceEvent.getDescription());
@@ -176,7 +166,7 @@ public class RaceEventDBRepository implements AbstractRepository<Long, Event> {
         Event eventToDelete = findById(id);
 
         String sql = "DELETE FROM race_events WHERE id = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.executeUpdate();
@@ -191,7 +181,7 @@ public class RaceEventDBRepository implements AbstractRepository<Long, Event> {
         if (id == null) throw new RepositoryException("ID cannot be null");
         String sql = "SELECT * FROM race_events WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -213,7 +203,7 @@ public class RaceEventDBRepository implements AbstractRepository<Long, Event> {
     public Iterable<Event> findAll() throws RepositoryException {
         List<Event> events = new ArrayList<>();
         String sql = "SELECT * FROM race_events";
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {

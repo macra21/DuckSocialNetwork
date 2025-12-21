@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.org.ddd.ui.user.FriendshipsController"
+            stylesheets="@../../css/friendships.css">
+    <left>
+        <VBox alignment="CENTER" spacing="15.0" prefWidth="250.0">
+            <padding>
+                <Insets top="15.0" bottom="15.0" left="15.0" right="15.0"/>
+            </padding>
+            <Label text="Friends" alignment="CENTER"/>
+            <ToggleButton fx:id="pendingRequestsToggle" text="Show Pending Requests" onAction="#handleToggleChange"/>
+            <ListView fx:id="friendsListView" />
+        </VBox>
+    </left>
+    <center>
+        <VBox fx:id="detailsContainer" spacing="15.0" alignment="CENTER">
+            <padding>
+                <Insets top="15.0" bottom="15.0" left="15.0" right="15.0"/>
+            </padding>
+            <VBox fx:id="userDetailsContainer" spacing="10.0" managed="false" visible="false">
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <Label text="Username: " style="-fx-font-weight: bold;"/>
+                    <Label fx:id="usernameLabel"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <Label text="User Type: " style="-fx-font-weight: bold;"/>
+                    <Label fx:id="userTypeLabel"/>
+                </HBox>
+                
+                <VBox fx:id="personDetailsBox" spacing="5" managed="false" visible="false">
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="First Name: "/>
+                        <Label fx:id="firstNameLabel"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Last Name: "/>
+                        <Label fx:id="lastNameLabel"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Occupation: "/>
+                        <Label fx:id="occupationLabel"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Birth Date: "/>
+                        <Label fx:id="birthDateLabel"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Empathy Level: "/>
+                        <Label fx:id="empathyLevelLabel"/>
+                    </HBox>
+                </VBox>
+
+                <VBox fx:id="duckDetailsBox" spacing="5" managed="false" visible="false">
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Duck Type: "/>
+                        <Label fx:id="duckTypeLabel"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Speed: "/>
+                        <Label fx:id="speedLabel"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Resistance: "/>
+                        <Label fx:id="resistanceLabel"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Flock ID: "/>
+                        <Label fx:id="flockIdLabel"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <VBox fx:id="pendingActionsContainer" spacing="10.0" managed="false" visible="false">
+                <Label text="Friend Request Received" style="-fx-font-weight: bold; -fx-text-fill: green;"/>
+                <Button text="Accept" onAction="#handleAcceptRequest"/>
+                <Button text="Reject" onAction="#handleRejectRequest"/>
+            </VBox>
+
+            <VBox fx:id="sentRequestActionsContainer" spacing="10.0" managed="false" visible="false">
+                <Label text="Friend Request Sent" style="-fx-font-weight: bold; -fx-text-fill: blue;"/>
+                <Button text="Cancel Request" onAction="#handleCancelRequest"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

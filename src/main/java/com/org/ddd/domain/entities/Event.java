@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class Event extends Identifiable<Long> {
     private String name;
     private String description;
-    private Long organizerId; // ID of the User who organized the event
+    private Long organizerId;
     private LocalDateTime createdAt;
 
     private final List<Long> subscriberIds;

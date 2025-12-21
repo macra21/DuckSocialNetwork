@@ -1,33 +1,59 @@
 package com.org.ddd.service;
 
 import com.org.ddd.domain.entities.Friendship;
+import com.org.ddd.domain.entities.FriendshipStatus;
 import com.org.ddd.domain.entities.User;
 import com.org.ddd.domain.validation.exceptions.ValidationException;
 import com.org.ddd.domain.validation.validators.Validator;
+import com.org.ddd.dto.FriendshipFilterDTO;
 import com.org.ddd.repository.AbstractRepository;
+import com.org.ddd.repository.dbRepositories.FriendshipDBRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
+import com.org.ddd.utils.paging.Page;
+import com.org.ddd.utils.paging.Pageable;
 
 import java.util.*;
 
 public class FriendshipService {
-    private final AbstractRepository<Long, Friendship> friendshipRepository;
+    private final FriendshipDBRepository friendshipRepository;
     private final AbstractRepository<Long, User> userRepository;
     private final Validator<Friendship> friendshipValidator;
 
-    public FriendshipService(AbstractRepository<Long, Friendship> friendshipRepository, AbstractRepository<Long, User> userRepository, Validator<Friendship> friendshipValidator) {
+    public FriendshipService(FriendshipDBRepository friendshipRepository, AbstractRepository<Long, User> userRepository, Validator<Friendship> friendshipValidator) {
         this.friendshipRepository = friendshipRepository;
         this.userRepository = userRepository;
         this.friendshipValidator = friendshipValidator;
     }
 
-    public void addFriendship(Long userId1, Long userId2) throws ValidationException, RepositoryException{
+    public void sendRequest(Long userId1, Long userId2) throws ValidationException, RepositoryException {
         Friendship newFriendship = new Friendship(userId1, userId2);
+        newFriendship.setStatus(FriendshipStatus.PENDING);
 
         friendshipValidator.validate(newFriendship);
-
         businessRulesValidator(userId1, userId2);
 
         friendshipRepository.add(newFriendship);
+    }
+
+    public void acceptRequest(Long friendshipId) throws RepositoryException {
+        Friendship friendship = friendshipRepository.findById(friendshipId);
+        if (friendship == null) {
+            throw new RepositoryException("Friendship request not found!");
+        }
+        if (friendship.getStatus() != FriendshipStatus.PENDING) {
+            throw new RepositoryException("Friendship is not in PENDING status!");
+        }
+        friendship.setStatus(FriendshipStatus.APPROVED);
+        friendshipRepository.update(friendship);
+    }
+
+    public void rejectRequest(Long friendshipId) throws RepositoryException {
+        Friendship friendship = friendshipRepository.findById(friendshipId);
+        if (friendship == null) {
+            throw new RepositoryException("Friendship request not found!");
+        }
+        friendship.setStatus(FriendshipStatus.REJECTED);
+        friendshipRepository.update(friendship);
     }
 
     public void deleteFriendship(Long friendshipId) throws RepositoryException{
@@ -52,6 +78,10 @@ public class FriendshipService {
         return friendshipRepository.findAll();
     }
 
+    public Page<Friendship> getFriendshipsOnPage(Pageable pageable, FriendshipFilterDTO filter) {
+        return friendshipRepository.findAllOnPage(pageable, filter);
+    }
+
     private void businessRulesValidator(Long userId1, Long userId2) throws RepositoryException, ValidationException{
         userRepository.findById(userId1);
         userRepository.findById(userId2);
@@ -61,38 +91,34 @@ public class FriendshipService {
         }
     }
 
-    private Friendship findExistingFriendship(Long userId1, Long userId2){
-        for (Friendship friendship: friendshipRepository.findAll()){
-            if (friendship.isBetween(userId1, userId2)){
-                return friendship;
-            }
-        }
+    public Friendship findExistingFriendship(Long userId1, Long userId2){
+        FriendshipFilterDTO f1 = new FriendshipFilterDTO();
+        f1.setUserId1(userId1);
+        f1.setUserId2(userId2);
+        f1.setStatus(FriendshipStatus.APPROVED);
+        Page<Friendship> p1 = friendshipRepository.findAllOnPage(new Pageable(0, 1), f1);
+        if (p1.getTotalNumberOfElements() > 0) return (Friendship) p1.getElementsOnPage().iterator().next();
+
+        FriendshipFilterDTO f2 = new FriendshipFilterDTO();
+        f2.setUserId1(userId2);
+        f2.setUserId2(userId1);
+        f2.setStatus(FriendshipStatus.APPROVED);
+        Page<Friendship> p2 = friendshipRepository.findAllOnPage(new Pageable(0, 1), f2);
+        if (p2.getTotalNumberOfElements() > 0) return (Friendship) p2.getElementsOnPage().iterator().next();
+
         return null;
     }
 
-    public Iterable<Friendship> findFriendshipsForUser(Long userId){
+    public Page<Friendship> findFriendshipsForUser(Long userId, Pageable pageable, FriendshipFilterDTO filter){
         userRepository.findById(userId);
-
-        List<Friendship> userFriendships = new ArrayList<>();
-
-        for (Friendship friendship: friendshipRepository.findAll()){
-            if (friendship.getUserId1().equals(userId) || friendship.getUserId2().equals(userId)){
-                userFriendships.add(friendship);
-            }
-        }
-
-        return userFriendships;
+        filter.setInvolvedUser(userId);
+        return friendshipRepository.findAllOnPage(pageable, filter);
     }
 
     public void deleteAllFriendshipsForUser(Long userId) throws RepositoryException{
-        List<Long> friendhipsToDelete = new ArrayList<>();
-        for (Friendship friendship: friendshipRepository.findAll()){
-            if (friendship.getUserId1().equals(userId) || friendship.getUserId2().equals(userId)){
-                friendhipsToDelete.add(friendship.getId());
-            }
-        }
-        for (Long friendshipId: friendhipsToDelete){
-            friendshipRepository.delete(friendshipId);
+        Page<Friendship> friendshipsToDelete = findFriendshipsForUser(userId, new Pageable(0, 1000), new FriendshipFilterDTO());
+        for (Friendship friendship: friendshipsToDelete.getElementsOnPage()){
+            friendshipRepository.delete(friendship.getId());
         }
     }
 
@@ -103,10 +129,12 @@ public class FriendshipService {
         }
 
         for (Friendship friendship: friendshipRepository.findAll()){
-            Long userId1 = friendship.getUserId1();
-            Long userId2 = friendship.getUserId2();
-            conections.get(userId1).add(userId2);
-            conections.get(userId2).add(userId1);
+            if (friendship.getStatus() == FriendshipStatus.APPROVED) {
+                Long userId1 = friendship.getUserId1();
+                Long userId2 = friendship.getUserId2();
+                conections.get(userId1).add(userId2);
+                conections.get(userId2).add(userId1);
+            }
         }
 
         Map<Long, Boolean> visited = new HashMap<>();
@@ -141,10 +169,12 @@ public class FriendshipService {
         }
 
         for (Friendship friendship : friendshipRepository.findAll()) {
-            Long userId1 = friendship.getUserId1();
-            Long userId2 = friendship.getUserId2();
-            connections.get(userId1).add(userId2);
-            connections.get(userId2).add(userId1);
+            if (friendship.getStatus() == FriendshipStatus.APPROVED) {
+                Long userId1 = friendship.getUserId1();
+                Long userId2 = friendship.getUserId2();
+                connections.get(userId1).add(userId2);
+                connections.get(userId2).add(userId1);
+            }
         }
 
         Map<Long, Boolean> visited = new HashMap<>();

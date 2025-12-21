@@ -86,7 +86,7 @@ public class ConsoleUI {
         System.out.println("2. User Management");
         System.out.println("3. Friendship Management");
         System.out.println("4. Messages");
-        System.out.println("5. Flocks (Carduri)");
+        System.out.println("5. Flocks");
         System.out.println("6. Events & Races");
         System.out.println("7. Network Analysis");
 

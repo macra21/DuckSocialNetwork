@@ -1,0 +1,36 @@
+.root {
+    -fx-background-color: #f4f4f4;
+}
+
+.list-view {
+    -fx-background-color: #f4f7ff;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+}
+
+.list-cell {
+    -fx-padding: 5px;
+    -fx-background-color: transparent;
+}
+
+#replyContainer {
+    -fx-padding: 5;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1 0 0 0;
+    -fx-background-color: #e8e8e8;
+}
+
+#replyToLabel {
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #0056b3;
+}

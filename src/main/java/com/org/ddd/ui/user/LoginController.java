@@ -1,6 +1,5 @@
 package com.org.ddd.ui.user;
 
-import com.org.ddd.Main;
 import com.org.ddd.domain.entities.User;
 import com.org.ddd.service.AuthService;
 import javafx.fxml.FXML;
@@ -10,22 +9,26 @@ import javafx.scene.control.TextField;
 
 public class LoginController {
 
-    private AuthService authService;
-    private Main mainApp;
-
     @FXML
     private TextField emailField;
+
     @FXML
     private PasswordField passwordField;
-    @FXML
-    private Label errorLabel;
 
-    public void setAuthService(AuthService authService) {
+    @FXML
+    private Label errorMessageLabel;
+
+    private AuthService authService;
+    private MainWindowController mainWindowController;
+
+    public void setup(AuthService authService, MainWindowController mainWindowController){
         this.authService = authService;
+        this.mainWindowController = mainWindowController;
     }
 
-    public void setMainApp(Main mainApp) {
-        this.mainApp = mainApp;
+    @FXML
+    public void initialize(){
+        //
     }
 
     @FXML
@@ -34,15 +37,16 @@ public class LoginController {
         String password = passwordField.getText();
 
         try {
-            User loggedInUser = authService.login(email, password);
-            mainApp.showMainAppScene(loggedInUser);
+            User user = authService.login(email, password);
+            mainWindowController.onLoginSuccess(user);
+            mainWindowController.showAppView();
         } catch (Exception e) {
-            errorLabel.setText("Login failed: " + e.getMessage());
+            errorMessageLabel.setText(e.getMessage());
         }
     }
 
     @FXML
-    private void handleGoToRegister() {
-        mainApp.showRegisterScene();
+    private void handleRegister() {
+        mainWindowController.showRegisterView();
     }
 }

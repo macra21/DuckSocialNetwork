@@ -26,19 +26,12 @@ public class MessageService {
         this.messageValidator = messageValidator;
     }
 
-    public Message sendMessage(Long senderId, List<Long> receiversIdList, String content, Long replyToMessageId) throws ValidationException, RepositoryException {
-        Message newMessage;
-        if (replyToMessageId != null) {
-            newMessage = new Message(senderId, receiversIdList, content, replyToMessageId);
-        } else {
-            newMessage = new Message(senderId, receiversIdList, content);
-        }
+    public Message sendMessage(Message message) throws ValidationException, RepositoryException {
+        messageValidator.validate(message);
+        businessRulesValidator(message.getSenderId(), message.getReceiversIdList());
 
-        messageValidator.validate(newMessage);
-        businessRulesValidator(senderId, receiversIdList);
-
-        messageRepo.add(newMessage);
-        return newMessage;
+        messageRepo.add(message);
+        return message;
     }
 
     public Page<Message> getConversation(Long userId1, Long userId2, Pageable pageable) {

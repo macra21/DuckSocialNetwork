@@ -24,7 +24,6 @@ public class UserService {
 
     public void addUser(User user) throws ValidationException, RepositoryException {
         userValidator.validate(user);
-        // TODO maybe add service validation(unique username, etc...)
         userRepository.add(user);
     }
 

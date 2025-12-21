@@ -2,10 +2,16 @@ DONE:
  - Implement hashing password in when saving user in csv files/db
  - Implement update function in MessageDBRepository to edit messages
  - Paginate Repositories: * MessageDBRepository
+                          * FrienshipDBRepository
+                          * UserDBRepository
 
 TODO:
  - Use EventValidator in EventService
  - Only allow the organizer of the event to execute it
  - Paginate Repositories: * FlockDBRepository
-                          * FrienshipDBRepository
-                          * RaceDBRepository
+                          * RaceEventDBRepository
+ - Add infinite scrolling to messages view (load maximum 2 pages at one time)
+ - Add deletion of personal messages functinoality
+ - Make UI prettier with css
+ - Add trigger on insert operation in the db to get notifications efficiently
+ - Mark whole conversations as read, not one message at a time, because there are to many transactions in the db as seen in the db Dashboard

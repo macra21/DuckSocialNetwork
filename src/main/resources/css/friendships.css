@@ -1,0 +1,51 @@
+.toggle-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #5a6268;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #007bff;
+}
+
+.toggle-button:selected:hover {
+    -fx-background-color: #0056b3;
+}
+
+#detailsContainer {
+    -fx-padding: 20px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+#detailsContainer .label {
+    -fx-font-size: 16px;
+}
+
+#pendingActionsContainer .button, #sentRequestActionsContainer .button {
+    -fx-pref-width: 150px;
+}
+
+#pendingActionsContainer .button:first-child {
+    -fx-background-color: #28a745;
+}
+
+#pendingActionsContainer .button:first-child:hover {
+    -fx-background-color: #218838;
+}
+
+#pendingActionsContainer .button:last-child, #sentRequestActionsContainer .button {
+    -fx-background-color: #dc3545;
+}
+
+#pendingActionsContainer .button:last-child:hover, #sentRequestActionsContainer .button:hover {
+    -fx-background-color: #c82333;
+}

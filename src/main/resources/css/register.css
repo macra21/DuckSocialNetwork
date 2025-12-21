@@ -1,0 +1,48 @@
+.vbox {
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-padding: 20;
+}
+
+#titleLabel {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.text-field, .password-field, .combo-box, .date-picker {
+    -fx-max-width: 200;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #a9a9a9;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #cccccc;
+}
+
+#errorMessageLabel {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-font-size: 14px;
+    -fx-padding: 8 15 8 15;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+}
+
+#registerButton {
+    -fx-background-color: #28a745;
+}
+
+#registerButton:hover {
+    -fx-background-color: #218838;
+}
+
+#loginButton {
+    -fx-background-color: #6c757d;
+}
+
+#loginButton:hover {
+    -fx-background-color: #5a6268;
+}

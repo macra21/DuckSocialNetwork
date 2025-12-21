@@ -1,119 +1,136 @@
 package com.org.ddd.ui.user;
 
-import com.org.ddd.Main;
 import com.org.ddd.domain.entities.Duck;
 import com.org.ddd.domain.entities.DuckType;
 import com.org.ddd.domain.entities.Person;
+import com.org.ddd.domain.entities.User;
 import com.org.ddd.service.AuthService;
-import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import java.time.LocalDate;
-
 public class RegisterController {
+    // User Fields
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private ComboBox<String> userChangeComboBox;
 
+    // Person Fields
+    @FXML
+    private VBox PersonVBox;
+    @FXML
+    private TextField firstNameField;
+    @FXML
+    private TextField lastNameField;
+    @FXML
+    private DatePicker birthDateField;
+    @FXML
+    private TextField occupationField;
+    @FXML
+    private TextField empathyLevelField;
+
+    // Duck Fields
+    @FXML
+    private VBox DuckVBox;
+    @FXML
+    private TextField speedField;
+    @FXML
+    private TextField resistanceField;
+    @FXML
+    private ComboBox<DuckType> duckTypeComboBox;
+
+    @FXML
+    private Label errorMessageLabel;
+
+    @FXML
+    private Button goToLoginButton;
+    @FXML
+    private Button registerButton;
+
+    private MainWindowController mainWindowController;
     private AuthService authService;
-    private Main mainApp;
 
-    // Common fields
-    @FXML private ComboBox<String> userTypeComboBox;
-    @FXML private TextField usernameField;
-    @FXML private TextField emailField;
-    @FXML private PasswordField passwordField;
-    @FXML private PasswordField confirmPasswordField;
-    @FXML private Label errorLabel;
 
-    // Person fields
-    @FXML private VBox personFieldsVBox;
-    @FXML private TextField firstNameField;
-    @FXML private TextField lastNameField;
-    @FXML private DatePicker birthDatePicker;
-    @FXML private TextField occupationField;
-    @FXML private TextField empathyLevelField;
 
-    // Duck fields
-    @FXML private VBox duckFieldsVBox;
-    @FXML private ComboBox<DuckType> duckTypeComboBox;
-    @FXML private TextField speedField;
-    @FXML private TextField resistanceField;
-
-    @FXML
-    public void initialize() {
-        userTypeComboBox.setItems(FXCollections.observableArrayList("Person", "Duck"));
-        duckTypeComboBox.setItems(FXCollections.observableArrayList(DuckType.values()));
-
-        userTypeComboBox.getSelectionModel().select("Person");
-        handleUserTypeChange();
-    }
-
-    public void setAuthService(AuthService authService) {
+    public void setup(AuthService authService, MainWindowController mainWindowController){
         this.authService = authService;
+        this.mainWindowController = mainWindowController;
+
     }
 
-    public void setMainApp(Main mainApp) {
-        this.mainApp = mainApp;
-    }
+    public void initialize(){
+        userChangeComboBox.getItems().addAll("Person", "Duck");
+        duckTypeComboBox.getItems().addAll(DuckType.values());
 
-    @FXML
-    private void handleUserTypeChange() {
-        boolean isPerson = "Person".equals(userTypeComboBox.getValue());
-        personFieldsVBox.setVisible(isPerson);
-        personFieldsVBox.setManaged(isPerson);
-        duckFieldsVBox.setVisible(!isPerson);
-        duckFieldsVBox.setManaged(!isPerson);
+        userChangeComboBox.setValue("Person");
+        duckTypeComboBox.setValue(DuckType.values()[0]);
     }
 
     @FXML
-    private void handleRegister() {
-        String username = usernameField.getText();
-        String email = emailField.getText();
-        String password = passwordField.getText();
-        String confirmPassword = confirmPasswordField.getText();
-
-        if (!password.equals(confirmPassword)) {
-            errorLabel.setText("Passwords do not match.");
-            return;
+    private void handleUserChange(){
+        if (userChangeComboBox.getValue().equals("Person")){
+            PersonVBox.setVisible(true);
+            PersonVBox.setManaged(true);
+            DuckVBox.setVisible(false);
+            DuckVBox.setManaged(false);
         }
+        else if (userChangeComboBox.getValue().equals("Duck")){
+            DuckVBox.setVisible(true);
+            DuckVBox.setManaged(true);
+            PersonVBox.setVisible(false);
+            PersonVBox.setManaged(false);
+        }
+    }
 
+    @FXML
+    private void handleGoToLoginButton(){
+        mainWindowController.showLoginView();
+    }
+
+    @FXML
+    private void handleRegisterButton(){
         try {
-            String userType = userTypeComboBox.getValue();
-            if ("Person".equals(userType)) {
-                registerPerson(username, email, password);
-            } else {
-                registerDuck(username, email, password);
+            User user = null;
+            if (userChangeComboBox.getValue().equals("Person")){
+                Person person = new Person(
+                        usernameField.getText(),
+                        emailField.getText(),
+                        passwordField.getText(),
+                        firstNameField.getText(),
+                        lastNameField.getText(),
+                        birthDateField.getValue(),
+                        occupationField.getText(),
+                        Integer.parseInt(empathyLevelField.getText())
+                );
+                user = authService.register(person);
+            } else if (userChangeComboBox.getValue().equals("Duck")){
+                Duck duck = new Duck(
+                        usernameField.getText(),
+                        emailField.getText(),
+                        passwordField.getText(),
+                        Integer.parseInt(speedField.getText()),
+                        Integer.parseInt(resistanceField.getText()),
+                        (DuckType) duckTypeComboBox.getValue()
+                );
+                user = authService.register(duck);
             }
-            
-            mainApp.showLoginScene();
-
+            mainWindowController.onLoginSuccess(user);
+            mainWindowController.showAppView();
         } catch (Exception e) {
-            errorLabel.setText("Registration failed: " + e.getMessage());
+            if (e.getMessage().equals("For input string: \"\"")){
+                errorMessageLabel.setText("Fill all fields!");
+            }
+            else{
+                errorMessageLabel.setText(e.getMessage());
+            }
+
+            System.out.println(e.getMessage());
         }
-    }
-
-    private void registerPerson(String username, String email, String password) throws Exception {
-        String firstName = firstNameField.getText();
-        String lastName = lastNameField.getText();
-        LocalDate birthDate = birthDatePicker.getValue();
-        String occupation = occupationField.getText();
-        int empathyLevel = Integer.parseInt(empathyLevelField.getText());
-
-        Person newUser = new Person(username, email, password, firstName, lastName, birthDate, occupation, empathyLevel);
-        authService.register(newUser);
-    }
-
-    private void registerDuck(String username, String email, String password) throws Exception {
-        DuckType duckType = duckTypeComboBox.getValue();
-        double speed = Double.parseDouble(speedField.getText());
-        double resistance = Double.parseDouble(resistanceField.getText());
-
-        Duck newDuck = new Duck(username, email, password, speed, duckType, resistance);
-        authService.register(newDuck);
-    }
-
-    @FXML
-    private void handleGoToLogin() {
-        mainApp.showLoginScene();
     }
 }

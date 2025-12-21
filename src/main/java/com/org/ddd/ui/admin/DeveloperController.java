@@ -269,8 +269,6 @@ public class DeveloperController {
     @FXML
     private void handleCommitAction() {
         errorLabel.setText("");
-        //System.out.println(currentAction);
-        //System.out.println(currentView);
         try {
             if (currentAction.equals("ADD")) {
                 if (currentView.equals("USERS")) {
@@ -282,7 +280,6 @@ public class DeveloperController {
                 }
             } else if (currentAction.equals("DELETE")) {
                 if (currentView.equals("USERS")) {
-                    //System.out.println("Sterg");
                     executeDeleteUser();
                     errorLabel.setText("User deleted successfully!");
                 } else if (currentView.equals("FRIENDSHIPS")) {
@@ -315,7 +312,7 @@ public class DeveloperController {
             DuckType duckType = addDuckTypeComboBox.getValue();
             double speed = Double.parseDouble(addSpeedField.getText());
             double resistance = Double.parseDouble(addResistanceField.getText());
-            Duck duck = new Duck(username, email, password, speed, duckType, resistance);
+            Duck duck = new Duck(username, email, password, speed, resistance, duckType);
             userService.addUser(duck);
         }
         loadUsersPage(pagination.getCurrentPageIndex());
@@ -325,14 +322,13 @@ public class DeveloperController {
         Long id = Long.parseLong(deleteUserIdField.getText());
         System.out.println(deleteUserIdField.getText());
         userService.deleteUser(id);
-        //System.out.printf("sters");
         loadUsersPage(pagination.getCurrentPageIndex());
     }
 
     private void executeAddFriendship() throws RepositoryException {
         Long userId1 = Long.parseLong(addFriendshipUser1IdField.getText());
         Long userId2 = Long.parseLong(addFriendshipUser2IdField.getText());
-        friendshipService.addFriendship(userId1, userId2);
+        friendshipService.sendRequest(userId1, userId2);
         loadFriendships();
     }
 

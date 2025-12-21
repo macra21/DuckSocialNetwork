@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@../../css/app.css">
+    <left>
+        <VBox alignment="TOP_CENTER" spacing="10.0" prefWidth="120.0">
+            <padding>
+                <Insets top="10.0" left="10.0" right="10.0" bottom="10.0"/>
+            </padding>
+            <Button onAction="#handleExploreView" text="Explore" prefWidth="100.0"/>
+            <Button onAction="#handleMessagesView" text="Messages" prefWidth="100.0"/>
+            <Button onAction="#handleFriendshipsView" text="Friendships" prefWidth="100.0"/>
+        </VBox>
+    </left>
+</BorderPane>

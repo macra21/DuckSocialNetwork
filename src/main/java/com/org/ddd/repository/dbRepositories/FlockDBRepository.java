@@ -4,6 +4,7 @@ import com.org.ddd.domain.entities.Flock;
 import com.org.ddd.domain.entities.FlockPurpose;
 import com.org.ddd.repository.AbstractRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
+import com.org.ddd.utils.DatabaseConnectionManager;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -12,19 +13,7 @@ import java.util.List;
 
 public class FlockDBRepository implements AbstractRepository<Long, Flock> {
 
-    private final String url;
-    private final String username;
-    private final String password;
-
-    public FlockDBRepository(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
-    }
+    public FlockDBRepository() {}
 
     @Override
     public void add(Flock entity) throws RepositoryException {
@@ -35,7 +24,7 @@ public class FlockDBRepository implements AbstractRepository<Long, Flock> {
         String sqlFlock = "INSERT INTO flocks (name, purpose, created_at) VALUES (?, ?, ?)";
         String sqlMember = "INSERT INTO flock_members (flock_id, duck_id) VALUES (?, ?)";
 
-        try (Connection connection = getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getConnection()) {
             Long generatedId = null;
             try (PreparedStatement ps = connection.prepareStatement(sqlFlock, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, entity.getName());
@@ -82,7 +71,7 @@ public class FlockDBRepository implements AbstractRepository<Long, Flock> {
 
         String sql = "DELETE FROM flocks WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, id);
@@ -100,7 +89,7 @@ public class FlockDBRepository implements AbstractRepository<Long, Flock> {
 
         String sql = "SELECT * FROM flocks WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
 
@@ -123,7 +112,7 @@ public class FlockDBRepository implements AbstractRepository<Long, Flock> {
         List<Flock> flocks = new ArrayList<>();
         String sql = "SELECT * FROM flocks";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 

@@ -5,6 +5,7 @@ import com.org.ddd.domain.entities.*;
 import com.org.ddd.dto.UserFilterDTO;
 import com.org.ddd.repository.PagingRepository;
 import com.org.ddd.repository.exceptions.RepositoryException;
+import com.org.ddd.utils.DatabaseConnectionManager;
 import com.org.ddd.utils.paging.Page;
 import com.org.ddd.utils.paging.Pageable;
 import javafx.util.Pair;
@@ -17,18 +18,7 @@ import java.util.List;
 
 public class UserDBRepository implements PagingRepository<Long, User> {
 
-    private final String url;
-    private final String username;
-    private final String password;
-
-    public UserDBRepository(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, username, password);
+    public UserDBRepository() {
     }
 
     @Override
@@ -48,7 +38,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
             throw new RepositoryException("Unsupported user type");
         }
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, entity.getUsername());
@@ -108,7 +98,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
             throw new RepositoryException("Unsupported user type");
         }
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, entity.getUsername());
@@ -155,7 +145,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
         User userToRemove = findById(id);
 
         String sql = "DELETE FROM users WHERE id = ?";
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, id);
@@ -176,7 +166,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
 
         String sql = "SELECT * FROM users WHERE id = ?";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, id);
@@ -199,7 +189,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
 
-        try (Connection connection = getConnection();
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -346,7 +336,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
     }
 
     public Page<User> findAllOnPage(Pageable pageable, UserFilterDTO filter){
-        try (Connection connection = getConnection()){
+        try (Connection connection = DatabaseConnectionManager.getConnection()){
             int totalNumberOfUsers = this.count(connection, filter);
             List<User> usersOnPage;
             if (totalNumberOfUsers > 0){
@@ -396,7 +386,7 @@ public class UserDBRepository implements PagingRepository<Long, User> {
             }
 
             user = new Duck(
-                    username, email, password, speed, type, resistance
+                    username, email, password, speed, resistance, type
             );
             ((Duck) user).setFlockId(flockId);
 

@@ -17,7 +17,5 @@
             </children>
         </VBox>
     </left>
-    
-    <!-- The controller will populate Center and Right depending on the selected entity -->
 
 </BorderPane>

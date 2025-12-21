@@ -6,7 +6,7 @@ public class Duck extends User{
     private DuckType duckType;
     private Long flockId;
 
-    public Duck(String username, String email, String password, double speed, DuckType duckType, double resistance) {
+    public Duck(String username, String email, String password, double speed, double resistance, DuckType duckType) {
         super(username, email, password);
         this.speed = speed;
         this.resistance = resistance;

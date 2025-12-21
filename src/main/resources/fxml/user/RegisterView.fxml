@@ -2,77 +2,48 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.org.ddd.ui.user.RegisterController">
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.org.ddd.ui.user.RegisterController"
+            prefHeight="400.0" prefWidth="600.0"
+            stylesheets="@../../css/register.css">
     <center>
-        <VBox alignment="CENTER" maxWidth="600.0" spacing="15.0">
-            <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-            </padding>
-
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Register New Account" />
-
-            <ComboBox fx:id="userTypeComboBox" onAction="#handleUserTypeChange" prefWidth="200.0" promptText="Select User Type" />
-
-            <HBox spacing="20.0">
-                <!-- Left Column -->
-                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-                    <Label style="-fx-font-weight: bold;" text="Credentials" />
-                    <Label text="Username:" />
-                    <TextField fx:id="usernameField" />
-                    <Label text="Email:" />
-                    <TextField fx:id="emailField" />
-                    <Label text="Password:" />
-                    <PasswordField fx:id="passwordField" />
-                    <Label text="Confirm Password:" />
-                    <PasswordField fx:id="confirmPasswordField" />
+        <VBox styleClass="vbox">
+            <Label id="titleLabel" text="Register"/>
+            <HBox spacing="10.0" alignment="BASELINE_CENTER">
+                <VBox alignment="BASELINE_CENTER" spacing="10.0">
+                    <TextField fx:id="usernameField" promptText="Username"/>
+                    <TextField fx:id="emailField" promptText="Email"/>
+                    <PasswordField fx:id="passwordField" promptText="Password"/>
+                    <ComboBox fx:id="userChangeComboBox" promptText="Person" onAction="#handleUserChange"/>
                 </VBox>
-
-                <!-- Right Column -->
-                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-                    <!-- Person Fields -->
-                    <VBox fx:id="personFieldsVBox" managed="false" spacing="5.0" visible="false">
-                        <Label style="-fx-font-weight: bold;" text="Person Details" />
-                        <Label text="First Name:" />
-                        <TextField fx:id="firstNameField" />
-                        <Label text="Last Name:" />
-                        <TextField fx:id="lastNameField" />
-                        <Label text="Birth Date:" />
-                        <DatePicker fx:id="birthDatePicker" prefWidth="280.0" />
-                        <Label text="Occupation:" />
-                        <TextField fx:id="occupationField" />
-                        <Label text="Empathy Level (0-100):" />
-                        <TextField fx:id="empathyLevelField" />
-                    </VBox>
-
-                    <!-- Duck Fields -->
-                    <VBox fx:id="duckFieldsVBox" managed="false" spacing="5.0" visible="false">
-                        <Label style="-fx-font-weight: bold;" text="Duck Details" />
-                        <Label text="Duck Type:" />
-                        <ComboBox fx:id="duckTypeComboBox" prefWidth="280.0" />
-                        <Label text="Speed:" />
-                        <TextField fx:id="speedField" />
-                        <Label text="Resistance:" />
-                        <TextField fx:id="resistanceField" />
-                    </VBox>
+                <VBox fx:id="PersonVBox" managed="true" visible="true" alignment="BASELINE_CENTER" spacing="10.0">
+                    <TextField fx:id="firstNameField" promptText="First Name"/>
+                    <TextField fx:id="lastNameField" promptText="Last Name"/>
+                    <DatePicker fx:id="birthDateField" promptText="Birth Date"/>
+                    <TextField fx:id="occupationField" promptText="Occupation"/>
+                    <TextField fx:id="empathyLevelField" promptText="Empathy level"/>
+                </VBox>
+                <VBox fx:id="DuckVBox" managed="false" visible="false" alignment="BASELINE_CENTER" spacing="10.0">
+                    <TextField fx:id="speedField" promptText="Speed"/>
+                    <TextField fx:id="resistanceField" promptText="Resistance"/>
+                    <ComboBox fx:id="duckTypeComboBox" promptText="Duck type"/>
                 </VBox>
             </HBox>
-
-            <VBox alignment="CENTER" spacing="10.0">
-                <Button onAction="#handleRegister" prefWidth="200.0" text="Register" />
-                <Button onAction="#handleGoToLogin" prefWidth="200.0" text="Back to Login" />
-            </VBox>
-
-            <Label fx:id="errorLabel" style="-fx-text-fill: red;" wrapText="true" />
-
+            <Label fx:id="errorMessageLabel" text=""/>
+            <HBox spacing="100.0" alignment="CENTER">
+                <Button id="loginButton" onAction="#handleGoToLoginButton" text="Go to Login"/>
+                <Button id="registerButton" onAction="#handleRegisterButton" text="Register"/>
+            </HBox>
         </VBox>
     </center>
 </BorderPane>
