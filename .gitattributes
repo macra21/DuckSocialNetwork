@@ -1,0 +1,6 @@
+*.fxml linguist-detectable=true
+*.fxml linguist-language=Java
+
+*.sql linguist-detectable=true
+
+*.css linguist-detectable=true
